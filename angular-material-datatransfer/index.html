@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>angular-material-datatransfer</title>
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+  <!-- Bootstrap CSS included for demonstration purposes only -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <base href="/">
+<link href="/css/app.f64a9889f9481c4dcee9.css" rel="stylesheet"></head>
+
+<body>
+  <div style="padding: 40px;">
+    <angular-material-datatransfer>Loading...</angular-material-datatransfer>
+    <p>
+      <div class="page-header">
+        <h3>Sample files <small>For download demonstration purposes only</small></h3>
+      </div>
+      <button class="btn btn-default" onclick="downloadAll()">Download all</button>
+      <p>
+        <ul id="sampleDownloadFileList">
+        </ul>
+      </p>
+    </p>
+  </div>
+
+  <script>
+    var sampleDownloadFiles = [
+      {
+        id: 1,
+        filename: 'sample_file_1.tmp',
+        url: '/files/sample_file_1.tmp',
+        size: 26445000
+      },
+      {
+        id: 2,
+        filename: 'sample_file_2.tmp',
+        url: '/files/sample_file_2.tmp',
+        size: 12456000
+      },
+      {
+        id: 3,
+        filename: 'sample_file_3.tmp',
+        url: '/files/sample_file_3.tmp',
+        size: 140977000
+      },
+      {
+        id: 4,
+        filename: 'sample_file_4.tmp',
+        url: '/files/sample_file_4.tmp',
+        size: 248741000
+      }
+    ];
+
+    function fillDownloadItemList() {
+      var listElement = document.getElementById('sampleDownloadFileList')
+      if (!!listElement) {
+        sampleDownloadFiles.forEach(function (element) {
+          var node = document.createElement('li');
+          var link = document.createElement('a');
+          link.setAttribute('href', 'javascript:void(0);');
+          link.setAttribute('onclick', 'downloadItem(' + element.id + ')');
+          link.innerHTML = element.filename;
+          node.appendChild(link);
+          listElement.appendChild(node);
+        });
+      }
+    }
+    fillDownloadItemList();
+
+    function downloadAll() {
+      sampleDownloadFiles.forEach(function (element) {
+        this.downloadItem(element.id);
+      }, this);
+      return false;
+    }
+
+    function downloadItem(id) {
+      var sample = getSampleById(id);
+      if (!!sample) {
+        var event = new CustomEvent('amd.download-item', { 'detail': { 'filename': sample.filename, 'url': sample.url, 'size': sample.size } });
+        window.dispatchEvent(event);
+      }
+      return false;
+    }
+
+    function getSampleById(id) {
+      for (var x = 0; x < sampleDownloadFiles.length; x++) {
+        var sample = sampleDownloadFiles[x];
+        if (sample.id === id) {
+          return sample;
+        }
+      }
+    }
+
+    (function () {
+      window.addEventListener('amd.init', function () {
+        var config = {
+          core: {
+            showUploadDropzone: true,
+            paginationRppOptions: [5, 10, 25]
+          },
+          resumablejs: {
+            simultaneousUploads: 2
+          }
+        };
+        var event = new CustomEvent('amd.set-config', { 'detail': config });
+        window.dispatchEvent(event);
+      });
+    })();
+  </script>
+
+<script type="text/javascript" src="/js/polyfills.f64a9889f9481c4dcee9.js"></script><script type="text/javascript" src="/js/vendor.f64a9889f9481c4dcee9.js"></script><script type="text/javascript" src="/js/app.f64a9889f9481c4dcee9.js"></script></body>
+
+</html>
