@@ -83,7 +83,7 @@
       var sample = getSampleById(id);
       if (!!sample) {
         var event = new CustomEvent('amd.download-item', { 'detail': { 'filename': sample.filename, 'url': sample.url, 'size': sample.size } });
-        window.dispatchEvent(event);
+        document.dispatchEvent(event);
       }
       return false;
     }
@@ -108,7 +108,7 @@
         }
       };
       var event = new CustomEvent('amd.create', { 'detail': config });
-      window.dispatchEvent(event);
+      document.dispatchEvent(event);
     })();
   </script>
 
