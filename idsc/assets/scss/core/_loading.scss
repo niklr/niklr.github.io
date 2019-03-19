@@ -1,0 +1,29 @@
+.loading-overlay {
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+
+    .content {
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        .content-title {
+            margin-top: 0px;
+            padding-bottom: 10px;
+        }
+        .content-form {
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            @include shadow-big();
+        }
+    }
+}

@@ -1,0 +1,37 @@
+.custom-table {
+    display: table;
+}
+
+.custom-table-fixed {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    max-width: 100%;
+}
+
+.custom-table-row {
+    display: table-row;
+
+    .custom-table-cell:last-of-type {
+        padding-right: 0px;
+    }
+}
+
+.custom-table-cell,
+.custom-table-cell-padding {
+    display: table-cell;
+    padding-right: 10px;
+    vertical-align: middle;
+    /* overwrite bootstrap */
+    .form-control {
+        display: inherit;
+    }
+
+    button {
+        display: inherit;
+    }
+}
+
+.custom-table-cell-padding {
+    padding-bottom: 5px;
+}

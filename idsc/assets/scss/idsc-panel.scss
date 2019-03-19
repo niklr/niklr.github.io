@@ -1,0 +1,41 @@
+@import '~@angular/material/theming';
+
+// always include only once per project
+@include mat-core();
+
+// import our custom theme
+@import 'angular-material-theme.scss';
+
+// specify theme class eg: <body class="my-theme"> ... </body>
+.idsc-theme {  
+  // use our theme with angular-material-theme mixin
+  @include angular-material-theme($idsc-theme);
+}
+
+@import 'bootstrap-overrides.scss';
+
+// import bootstrap
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/root";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/images";
+@import "~bootstrap/scss/grid";
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/card";
+
+// core components
+@import "core/mixins";
+@import "core/badge";
+@import "core/overrides";
+@import "core/selected";
+@import "core/global";
+@import "core/footer";
+@import "core/loading";
+@import "core/container";
+@import "core/login";
+@import "core/sidebar";
+@import "core/osml";
+@import "core/table";

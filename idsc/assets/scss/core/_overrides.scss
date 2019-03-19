@@ -1,0 +1,53 @@
+.custom-button-checked {
+    color: black !important;
+    background-color: #e0e0e0 !important;
+}
+
+.custom-button-checked:disabled {
+    color: rgba(0, 0, 0, 0.26) !important;
+}
+
+.custom-button-primary-checked {
+    color: black !important;
+    background-color: mat-color($idsc-theme-primary, 900, 0.3) !important;    
+}
+
+/* override toastr */
+#toast-container > .toast-info {
+    background-image: none;
+    background-color: mat-color($idsc-theme-primary);
+    color: white;
+    opacity: 1;
+}
+
+/* override angular material */
+.custom-mat-form-field-no-hint {
+    .mat-form-field-wrapper {
+        padding-bottom: 0px;
+    }
+
+    .mat-input-element:disabled {
+        color: black;
+    }
+}
+
+.custom-mat-form-field-button {
+    top: -5px !important;
+    padding: 11px 0 11px 0 !important;
+}
+
+.custom-mat-form-field-absolute-button {
+    position: absolute !important;
+    height: 30px;
+    line-height: 15px !important;
+}
+
+.custom-mat-form-field-select {
+    .mat-form-field-wrapper {
+        padding-bottom: 0px;
+    }
+
+    .mat-form-field-underline {
+        top: 40px;
+    }
+}

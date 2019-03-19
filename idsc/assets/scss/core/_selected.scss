@@ -1,0 +1,40 @@
+@keyframes custom-blink-animation {
+    0% {
+        background-color: mat-color($idsc-theme-primary, 900, 0.01);
+    }
+
+    50% {
+        background-color: mat-color($idsc-theme-primary, 900, 0.15);
+    }
+
+    100% {
+        background-color: mat-color($idsc-theme-primary, 900, 0.01);
+    }
+}
+
+@-webkit-keyframes custom-blink-animation {
+    0% {
+        background-color: mat-color($idsc-theme-primary, 900, 0.01);
+    }
+
+    50% {
+        background-color: mat-color($idsc-theme-primary, 900, 0.15);
+    }
+
+    100% {
+        background-color: mat-color($idsc-theme-primary, 900, 0.01);
+    }
+}
+
+.custom-animated-selected {
+    -moz-animation: custom-blink-animation normal 2s infinite linear;
+
+    /* Firefox */
+    -webkit-animation: custom-blink-animation normal 2s infinite linear;
+
+    /* Webkit */
+    -ms-animation: custom-blink-animation normal 2s infinite linear;
+
+    /* IE */
+    animation: custom-blink-animation normal 2s infinite linear;
+}

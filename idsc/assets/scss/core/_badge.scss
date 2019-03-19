@@ -1,0 +1,23 @@
+.custom-badge {
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    line-height: 18px;
+    font-size: 12px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: text-top;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    color: black;
+    border: 2px solid mat-color($idsc-theme-primary);
+    background: mat-color($idsc-theme-primary, '900-contrast');
+}
+
+.custom-badge-primary {
+    color: mat-color($idsc-theme-primary, '900-contrast');
+    border: 2px solid mat-color($idsc-theme-primary, '900-contrast');
+    background: mat-color($idsc-theme-primary);
+}

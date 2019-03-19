@@ -1,0 +1,14 @@
+{
+    "logging": {
+        "enableConsoleOutput": true
+    },
+    "api": {
+        "endpoint": "https://localhost:5001"
+    },
+    "authority": {
+        "clientId": "idsc-panel",
+        "scope": "openid profile email offline_access",
+        "issuer": "https://idp.bavardio.com/auth/realms/idsc",
+        "discoveryEndpoint": "https://idp.bavardio.com/auth/realms/idsc/.well-known/openid-configuration"
+    }
+}

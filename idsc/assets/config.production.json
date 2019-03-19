@@ -1,0 +1,14 @@
+{
+    "logging": {
+        "enableConsoleOutput": false
+    },
+    "api": {
+        "endpoint": "https://idsc-api.bavardio.com/"
+    },
+    "authority": {
+        "clientId": "idsc-panel",
+        "scope": "openid profile email offline_access",
+        "issuer": "https://idp.bavardio.com/auth/realms/idsc",
+        "discoveryEndpoint": "https://idp.bavardio.com/auth/realms/idsc/.well-known/openid-configuration"
+    }
+}

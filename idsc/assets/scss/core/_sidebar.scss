@@ -1,0 +1,67 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    /* Behind the navbar */
+    padding: 0;
+}
+
+.sidebar-background {
+    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.85) 100%), repeat 0 0, url($sidebar-bg-image) repeat 0 0;
+    background: -moz-linear-gradient(top, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.85) 100%), url($sidebar-bg-image) repeat 0 0; 
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0.85)), color-stop(100%,rgba(255,255,255,0.85))), url($sidebar-bg-image) repeat 0 0; 
+    background: -webkit-linear-gradient(top, rgba(255,255,255,0.85) 0%,rgba(255,255,255,0.85) 100%), url($sidebar-bg-image) repeat 0 0; 
+    background: -o-linear-gradient(top, rgba(255,255,255,0.85) 0%,rgba(255,255,255,0.85) 100%), url($sidebar-bg-image) repeat 0 0; 
+    background: -ms-linear-gradient(top, rgba(255,255,255,0.85) 0%,rgba(255,255,255,0.85) 100%), url($sidebar-bg-image) repeat 0 0;  
+    background: linear-gradient(to bottom, rgba(255,255,255,0.85) 0%,rgba(255,255,255,0.85) 100%), url($sidebar-bg-image) repeat 0 0;
+    background-size: cover;
+    background-position: center center;
+}
+
+.sidebar-left {
+    order: 0;
+    // box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+    // @include shadow-big();
+    @include shadow-8dp();
+}
+
+.sidebar-right {
+    order: 2;
+    box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-sticky {
+    z-index: 100;
+    position: -webkit-sticky;
+    position: sticky;
+    /* Height of navbar */
+    height: calc(100vh - #{$topnav-height});
+    // padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* Scrollable contents if viewport is shorter than content. */
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #333;
+}
+
+.sidebar .nav-link.active {
+    color: #007bff;
+}
+
+#map-sidebar-middle {
+    position: -webkit-sticky;
+    position: sticky;   
+    top: 0;
+    z-index: 1000;
+    max-height: 160px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.map-sidebar-middle-background {
+    background-color: #fff;
+}
