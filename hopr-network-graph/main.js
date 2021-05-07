@@ -33,49 +33,67 @@ class D3Component {
         this.isDestroyed = false;
         this.connectedLookup = {};
         this.subs = [];
-        this.handleNodeClick = (event, d) => {
-            this.handleClick(event);
-            this.node.style('opacity', (o) => {
-                if (o.id === d.id) {
-                    return 1;
+        this.handleClick = (event, d) => {
+            event.stopPropagation();
+            this.g.selectAll('.graphElement').style('opacity', (o) => {
+                if (d.type === _enums_graph_enum__WEBPACK_IMPORTED_MODULE_4__["GraphElementType"].EDGE) {
+                    if (o.type === _enums_graph_enum__WEBPACK_IMPORTED_MODULE_4__["GraphElementType"].EDGE) {
+                        // d = EDGE and o = EDGE
+                        if (o === d) {
+                            return 1.0;
+                        }
+                        return 0;
+                    }
+                    else {
+                        // d = EDGE and o = NODE
+                        if (o.id === d.source.id || o.id === d.target.id) {
+                            return 1.0;
+                        }
+                        return 0;
+                    }
                 }
-                if (this.isConnected(o.id, d.id)) {
-                    return 0.5;
+                else {
+                    if (o.type === _enums_graph_enum__WEBPACK_IMPORTED_MODULE_4__["GraphElementType"].EDGE) {
+                        // d = NODE and o = EDGE
+                        if (o.source.id === d.id || o.target.id === d.id) {
+                            return 1.0;
+                        }
+                        return 0;
+                    }
+                    else {
+                        // d = NODE and o = NODE
+                        if (o.id === d.id) {
+                            return 1;
+                        }
+                        if (this.isConnected(o.id, d.id)) {
+                            return 0.5;
+                        }
+                        return 0;
+                    }
                 }
-                return 0;
             });
-            this.edge.style('opacity', (o) => {
-                if (o.source.id === d.id || o.target.id === d.id) {
-                    return 1.0;
-                }
-                return 0;
-            });
-            this.selectEmitter.emit(new _models_graph_model__WEBPACK_IMPORTED_MODULE_5__["NodeGraphModel"]({
-                data: new _models_graph_model__WEBPACK_IMPORTED_MODULE_5__["NodeDataModel"]({
-                    id: d.id,
-                    name: d.name,
-                    weight: d.weight
-                })
-            }));
-        };
-        this.handleEdgeClick = (event, d) => {
-            this.handleClick(event);
-            this.node.style('opacity', (o) => {
-                if (o.id === d.source.id || o.id === d.target.id) {
-                    return 1.0;
-                }
-                return 0;
-            });
-            this.selectEmitter.emit(new _models_graph_model__WEBPACK_IMPORTED_MODULE_5__["EdgeGraphModel"]({
-                data: new _models_graph_model__WEBPACK_IMPORTED_MODULE_5__["EdgeDataModel"]({
-                    source: d.source.id,
-                    target: d.target.id,
-                    strength: d.strength
-                }),
-                scratch: new _models_graph_model__WEBPACK_IMPORTED_MODULE_5__["GraphScratchModel"]({
-                    transfer: d.transfer
-                })
-            }));
+            d3__WEBPACK_IMPORTED_MODULE_1__["select"](event.target).style('opacity', 1);
+            if (d.type === _enums_graph_enum__WEBPACK_IMPORTED_MODULE_4__["GraphElementType"].EDGE) {
+                this.selectEmitter.emit(new _models_graph_model__WEBPACK_IMPORTED_MODULE_5__["EdgeGraphModel"]({
+                    data: new _models_graph_model__WEBPACK_IMPORTED_MODULE_5__["EdgeDataModel"]({
+                        source: d.source.id,
+                        target: d.target.id,
+                        strength: d.strength
+                    }),
+                    scratch: new _models_graph_model__WEBPACK_IMPORTED_MODULE_5__["GraphScratchModel"]({
+                        transfer: d.transfer
+                    })
+                }));
+            }
+            else if (d.type === _enums_graph_enum__WEBPACK_IMPORTED_MODULE_4__["GraphElementType"].NODE) {
+                this.selectEmitter.emit(new _models_graph_model__WEBPACK_IMPORTED_MODULE_5__["NodeGraphModel"]({
+                    data: new _models_graph_model__WEBPACK_IMPORTED_MODULE_5__["NodeDataModel"]({
+                        id: d.id,
+                        name: d.name,
+                        weight: d.weight
+                    })
+                }));
+            }
         };
     }
     ngOnInit() {
@@ -149,6 +167,7 @@ class D3Component {
             this.simulation = d3__WEBPACK_IMPORTED_MODULE_1__["forceSimulation"](nodes)
                 .force('link', d3__WEBPACK_IMPORTED_MODULE_1__["forceLink"](edges).id((d) => d.id))
                 .force('charge', d3__WEBPACK_IMPORTED_MODULE_1__["forceManyBody"]().strength(-400))
+                .force('center', d3__WEBPACK_IMPORTED_MODULE_1__["forceCenter"](this.width / 2, this.height / 2))
                 .force('x', d3__WEBPACK_IMPORTED_MODULE_1__["forceX"]())
                 .force('y', d3__WEBPACK_IMPORTED_MODULE_1__["forceY"]())
                 .on('end', () => {
@@ -156,9 +175,11 @@ class D3Component {
             });
             this.graphService.isSimulating = true;
             this.edge = this.g
-                .selectAll('line')
+                .selectAll('.edge')
                 .data(edges)
                 .join('line')
+                .attr('class', 'graphElement')
+                .attr('marker-end', 'url(#arrowhead)')
                 .attr('stroke', (d) => {
                 var _a;
                 if ((_a = d === null || d === void 0 ? void 0 : d.transfer) === null || _a === void 0 ? void 0 : _a.type) {
@@ -174,22 +195,50 @@ class D3Component {
                 return _app_constants__WEBPACK_IMPORTED_MODULE_2__["AppConstants"].TX_EVENT_TRANSFER_COLOR;
             })
                 .attr('stroke-opacity', 0.6)
-                .attr('class', 'graphElement')
                 .attr('stroke-width', 2)
-                .on('click', this.handleEdgeClick);
+                .on('click', this.handleClick);
+            if (this.graphService.drawEdgeLabel) {
+                this.edgeLabel = this.g
+                    .selectAll('.edgeLabel')
+                    .data(edges)
+                    .enter()
+                    .append('text')
+                    .style('pointer-events', 'none')
+                    .attr('font-size', 5)
+                    .attr('fill', 'black')
+                    .attr('class', 'graphElement')
+                    .text((d) => { var _a, _b, _c; return (_c = (_b = (_a = d.transfer) === null || _a === void 0 ? void 0 : _a.args) === null || _b === void 0 ? void 0 : _b.amount) !== null && _c !== void 0 ? _c : d.type; });
+            }
             this.node = this.g
-                .selectAll('circle')
+                .selectAll('.node')
                 .data(nodes)
                 .join('circle')
                 .attr('stroke', '#fff')
                 .attr('stroke-width', 1.5)
-                .attr('class', 'graphElement')
                 .attr('r', (d) => Math.max(5, (d.weight / 10) + 5))
                 .attr('fill', _app_constants__WEBPACK_IMPORTED_MODULE_2__["AppConstants"].NODE_COLOR)
-                .on('click', this.handleNodeClick)
+                .attr('class', 'graphElement')
+                .on('click', this.handleClick)
                 .call(this.drag());
+            if (this.graphService.drawNodeLabel) {
+                this.nodeLabel = this.g
+                    .selectAll('.nodeLabel')
+                    .data(nodes)
+                    .enter()
+                    .append('text')
+                    .attr('font-size', 10)
+                    .attr('fill', 'black')
+                    .attr('class', 'graphElement')
+                    .text((d) => d.name);
+            }
             this.node.append('title')
                 .text((d) => d.id);
+            this.node.append('text')
+                .attr('font-size', 10)
+                .attr('fill', 'black')
+                .text((d) => {
+                return d.name;
+            });
             this.simulation.on('tick', () => {
                 this.graphService.isSimulating = true;
                 this.edge
@@ -197,9 +246,19 @@ class D3Component {
                     .attr('y1', (d) => d.source.y)
                     .attr('x2', (d) => d.target.x)
                     .attr('y2', (d) => d.target.y);
+                if (this.graphService.drawEdgeLabel) {
+                    this.edgeLabel
+                        .attr('x', (d) => (d.source.x + d.target.x) / 2)
+                        .attr('y', (d) => (d.source.y + d.target.y) / 2);
+                }
                 this.node
                     .attr('cx', (d) => d.x)
                     .attr('cy', (d) => d.y);
+                if (this.graphService.drawNodeLabel) {
+                    this.nodeLabel
+                        .attr('x', (d) => d.x)
+                        .attr('y', (d) => d.y);
+                }
             });
             this.connectedLookup = {};
             edges.forEach((d) => {
@@ -216,11 +275,27 @@ class D3Component {
             .attr('id', 'svgContainer')
             .attr('width', this.width)
             .attr('height', this.height)
-            .attr('viewBox', [-this.width / 2, -this.height / 2, this.width, this.height].toString())
             .on('click', () => {
-            this.g.selectAll('g > .graphElement').style('opacity', 1);
+            this.g.selectAll('.graphElement').style('opacity', 1);
             this.selectEmitter.emit(undefined);
         });
+        // Draw arrows
+        if (this.graphService.drawArrow) {
+            this.svg.append('defs')
+                .append('marker')
+                .attr('id', 'arrowhead')
+                .attr('viewBox', '-0 -5 10 10')
+                .attr('refX', 10)
+                .attr('refY', 0)
+                .attr('orient', 'auto')
+                .attr('markerWidth', 10)
+                .attr('markerHeight', 10)
+                .attr('xoverflow', 'visible')
+                .append('svg:path')
+                .attr('d', 'M 0,-2.5 L 5,0 L 0,2.5')
+                .attr('fill', '#ccc')
+                .attr('stroke', '#ccc');
+        }
         this.g = this.svg.append('g');
         this.zoom = d3__WEBPACK_IMPORTED_MODULE_1__["zoom"]()
             .extent([[0, 0], [this.width, this.height]])
@@ -263,20 +338,15 @@ class D3Component {
     isConnectedAsTarget(a, b) {
         return this.connectedLookup[`${b},${a}`];
     }
-    handleClick(event) {
-        event.stopPropagation();
-        this.g.selectAll('.graphElement').style('opacity', 0);
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](event.target).style('opacity', 1);
-    }
     center(count) {
         if (!this.isDestroyed) {
             const { width, height } = this.g.node().getBBox();
             if (width && height) {
                 const scale = Math.min(this.width / width, this.height / height) * 0.8;
-                if (scale < 10) {
+                if (count > 0) {
                     this.svg.transition()
                         .duration(750)
-                        .call(this.zoom.transform, d3__WEBPACK_IMPORTED_MODULE_1__["zoomIdentity"].translate(0, 0).scale(scale));
+                        .call(this.zoom.scaleTo, scale);
                 }
             }
             if (this.graphService.isSimulating && count < 5) {
@@ -777,6 +847,8 @@ class GraphComponent {
         }
     }
     onDataChanged(data) {
+        this.node = undefined;
+        this.edge = undefined;
         if (Array.isArray(data === null || data === void 0 ? void 0 : data.nodes) && data.nodes.length > 0) {
             this.message = undefined;
         }
@@ -868,6 +940,8 @@ GraphComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineCom
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CommonUtil", function() { return CommonUtil; });
 /* harmony import */ var _ethersproject_bignumber__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @ethersproject/bignumber */ "OheS");
+/* harmony import */ var ethers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ethers */ "wDBh");
+
 
 class CommonUtil {
     static isString(value) {
@@ -899,6 +973,9 @@ class CommonUtil {
     }
     static toBigNumber(bn) {
         return _ethersproject_bignumber__WEBPACK_IMPORTED_MODULE_0__["BigNumber"].from(bn);
+    }
+    static formatBigNumber(bn) {
+        return ethers__WEBPACK_IMPORTED_MODULE_1__["ethers"].utils.formatUnits(_ethersproject_bignumber__WEBPACK_IMPORTED_MODULE_0__["BigNumber"].from(bn), 18);
     }
 }
 
@@ -1134,6 +1211,9 @@ class GraphService {
         this.configService = configService;
         this.isLoading = false;
         this.isSimulating = false;
+        this.drawArrow = false;
+        this.drawEdgeLabel = false;
+        this.drawNodeLabel = false;
         this._onChangeSubject = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
         this.filter = new Map([
             [
@@ -1615,7 +1695,7 @@ class TransferArgsModel {
         return new TransferArgsModel({
             from: items[0],
             to: items[1],
-            amount: _utils_common_util__WEBPACK_IMPORTED_MODULE_0__["CommonUtil"].toBigNumber(items[2]).toString()
+            amount: _utils_common_util__WEBPACK_IMPORTED_MODULE_0__["CommonUtil"].formatBigNumber(items[2])
         });
     }
 }
