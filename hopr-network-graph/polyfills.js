@@ -81,6 +81,8 @@ __webpack_require__.r(__webpack_exports__);
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+// https://github.com/pouchdb/pouchdb/issues/7263
+window.global = window;
 
 
 /***/ }),
