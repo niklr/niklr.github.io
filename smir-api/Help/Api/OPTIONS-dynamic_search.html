@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>OPTIONS dynamic_search - SICAS Medical Image Repository</title>
+    <link rel="shortcut icon" href="../../Content/images/favicon.ico">
+    
+</head>
+<body>
+    
+
+<link type="text/css" href="../../Areas/HelpPage/HelpPage.css" rel="stylesheet" />
+<div id="body" class="help-page">
+    <section class="featured">
+        <div class="content-wrapper">
+            <p>
+                <a href="../../Help.html">Help Page Home</a>
+            </p>
+        </div>
+    </section>
+    <section class="content-wrapper main-content clear-fix">
+        
+<h1>OPTIONS dynamic_search</h1>
+<div>
+    <p>Returns the available options for this resource.</p>
+
+    <h2>Request Information</h2>
+
+    <h3>URI Parameters</h3>
+        <p>None.</p>
+
+
+
+    <h3>Body Parameters</h3>
+
+    <p></p>
+
+        <p>None.</p>
+
+
+    <h2>Response Information</h2>
+
+    <h3>Resource Description</h3>
+
+    <p></p>
+
+<a href="../ResourceModel%3FmodelName=DynamicSearchOptionsViewModel.html">DynamicSearchOptionsViewModel</a>    <table class="help-page-table">
+        <thead>
+            <tr><th>Name</th><th>Description</th><th>Type</th><th>Additional information</th></tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td class="parameter-name">LogicalOperators</td>
+                    <td class="parameter-documentation">
+                        <p>The different logical operators supported by the dynamic search.</p>
+                    </td>
+                    <td class="parameter-type">
+                                Collection of <a href="../ResourceModel%3FmodelName=DynamicSearchLogicalOperatorViewModel.html">DynamicSearchLogicalOperatorViewModel</a>
+
+                    </td>
+                    <td class="parameter-annotations">
+                            <p>None.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">SourceTypes</td>
+                    <td class="parameter-documentation">
+                        <p>The different source types supported by the dynamic search.</p>
+                    </td>
+                    <td class="parameter-type">
+                                Collection of <a href="../ResourceModel%3FmodelName=DynamicSearchSourceTypeViewModel.html">DynamicSearchSourceTypeViewModel</a>
+
+                    </td>
+                    <td class="parameter-annotations">
+                            <p>None.</p>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+
+
+        <h3>Response Formats</h3>
+
+<div>
+        <h4 class="sample-header">application/json, text/json</h4>
+        <div class="sample-content">
+            <span><b>Sample:</b></span>
+<pre class="wrapped">
+{
+  &quot;logicalOperators&quot;: [
+    {
+      &quot;name&quot;: &quot;And&quot;,
+      &quot;displayName&quot;: &quot;AND&quot;,
+      &quot;position&quot;: 1
+    },
+    {
+      &quot;name&quot;: &quot;Or&quot;,
+      &quot;displayName&quot;: &quot;OR&quot;,
+      &quot;position&quot;: 2
+    }
+  ],
+  &quot;sourceTypes&quot;: [
+    {
+      &quot;name&quot;: &quot;Objects&quot;,
+      &quot;displayName&quot;: &quot;Objects&quot;,
+      &quot;position&quot;: 1,
+      &quot;sourceFields&quot;: [
+        {
+          &quot;name&quot;: &quot;ObjectType&quot;,
+          &quot;displayName&quot;: &quot;Type&quot;,
+          &quot;position&quot;: 1,
+          &quot;comparisonOperators&quot;: [
+            {
+              &quot;name&quot;: &quot;Equals&quot;,
+              &quot;displayName&quot;: &quot;=&quot;,
+              &quot;position&quot;: 1,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;NotEquals&quot;,
+              &quot;displayName&quot;: &quot;!=&quot;,
+              &quot;position&quot;: 2,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            }
+          ]
+        },
+        {
+          &quot;name&quot;: &quot;ObjectId&quot;,
+          &quot;displayName&quot;: &quot;Object Id&quot;,
+          &quot;position&quot;: 2,
+          &quot;comparisonOperators&quot;: [
+            {
+              &quot;name&quot;: &quot;Equals&quot;,
+              &quot;displayName&quot;: &quot;=&quot;,
+              &quot;position&quot;: 1,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;NotEquals&quot;,
+              &quot;displayName&quot;: &quot;!=&quot;,
+              &quot;position&quot;: 2,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;Greater&quot;,
+              &quot;displayName&quot;: &quot;&gt;&quot;,
+              &quot;position&quot;: 4,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;Less&quot;,
+              &quot;displayName&quot;: &quot;&lt;&quot;,
+              &quot;position&quot;: 5,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;GreaterEqual&quot;,
+              &quot;displayName&quot;: &quot;&gt;=&quot;,
+              &quot;position&quot;: 6,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;LessEqual&quot;,
+              &quot;displayName&quot;: &quot;&lt;=&quot;,
+              &quot;position&quot;: 7,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            }
+          ]
+        },
+        {
+          &quot;name&quot;: &quot;SubjectId&quot;,
+          &quot;displayName&quot;: &quot;Subject Id&quot;,
+          &quot;position&quot;: 3,
+          &quot;comparisonOperators&quot;: [
+            {
+              &quot;name&quot;: &quot;Equals&quot;,
+              &quot;displayName&quot;: &quot;=&quot;,
+              &quot;position&quot;: 1,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;NotEquals&quot;,
+              &quot;displayName&quot;: &quot;!=&quot;,
+              &quot;position&quot;: 2,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;Contains&quot;,
+              &quot;displayName&quot;: &quot;Contains&quot;,
+              &quot;position&quot;: 3,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            }
+          ]
+        },
+        {
+          &quot;name&quot;: &quot;AnatomicalRegion&quot;,
+          &quot;displayName&quot;: &quot;Anatomical Region&quot;,
+          &quot;position&quot;: 4,
+          &quot;comparisonOperators&quot;: [
+            {
+              &quot;name&quot;: &quot;Equals&quot;,
+              &quot;displayName&quot;: &quot;=&quot;,
+              &quot;position&quot;: 1,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            }
+          ]
+        }
+      ]
+    },
+    {
+      &quot;name&quot;: &quot;RelatedObjects&quot;,
+      &quot;displayName&quot;: &quot;Related Objects&quot;,
+      &quot;position&quot;: 2,
+      &quot;sourceFields&quot;: [
+        {
+          &quot;name&quot;: &quot;ObjectType&quot;,
+          &quot;displayName&quot;: &quot;Type&quot;,
+          &quot;position&quot;: 1,
+          &quot;comparisonOperators&quot;: [
+            {
+              &quot;name&quot;: &quot;Equals&quot;,
+              &quot;displayName&quot;: &quot;=&quot;,
+              &quot;position&quot;: 1,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;NotEquals&quot;,
+              &quot;displayName&quot;: &quot;!=&quot;,
+              &quot;position&quot;: 2,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            }
+          ]
+        },
+        {
+          &quot;name&quot;: &quot;ObjectId&quot;,
+          &quot;displayName&quot;: &quot;Object Id&quot;,
+          &quot;position&quot;: 2,
+          &quot;comparisonOperators&quot;: [
+            {
+              &quot;name&quot;: &quot;Equals&quot;,
+              &quot;displayName&quot;: &quot;=&quot;,
+              &quot;position&quot;: 1,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;NotEquals&quot;,
+              &quot;displayName&quot;: &quot;!=&quot;,
+              &quot;position&quot;: 2,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;Greater&quot;,
+              &quot;displayName&quot;: &quot;&gt;&quot;,
+              &quot;position&quot;: 4,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;Less&quot;,
+              &quot;displayName&quot;: &quot;&lt;&quot;,
+              &quot;position&quot;: 5,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;GreaterEqual&quot;,
+              &quot;displayName&quot;: &quot;&gt;=&quot;,
+              &quot;position&quot;: 6,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;LessEqual&quot;,
+              &quot;displayName&quot;: &quot;&lt;=&quot;,
+              &quot;position&quot;: 7,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            }
+          ]
+        },
+        {
+          &quot;name&quot;: &quot;SubjectId&quot;,
+          &quot;displayName&quot;: &quot;Subject Id&quot;,
+          &quot;position&quot;: 3,
+          &quot;comparisonOperators&quot;: [
+            {
+              &quot;name&quot;: &quot;Equals&quot;,
+              &quot;displayName&quot;: &quot;=&quot;,
+              &quot;position&quot;: 1,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;NotEquals&quot;,
+              &quot;displayName&quot;: &quot;!=&quot;,
+              &quot;position&quot;: 2,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            },
+            {
+              &quot;name&quot;: &quot;Contains&quot;,
+              &quot;displayName&quot;: &quot;Contains&quot;,
+              &quot;position&quot;: 3,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            }
+          ]
+        },
+        {
+          &quot;name&quot;: &quot;AnatomicalRegion&quot;,
+          &quot;displayName&quot;: &quot;Anatomical Region&quot;,
+          &quot;position&quot;: 4,
+          &quot;comparisonOperators&quot;: [
+            {
+              &quot;name&quot;: &quot;Equals&quot;,
+              &quot;displayName&quot;: &quot;=&quot;,
+              &quot;position&quot;: 1,
+              &quot;typeaheadUrl&quot;: &quot;&quot;
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+</pre>
+        </div>
+</div>
+</div>
+    </section>
+</div>
+
+</body>
+</html>

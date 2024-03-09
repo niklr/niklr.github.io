@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>GET objects/{id}/object-ontologies?rpp={rpp}&amp;page={page} - SICAS Medical Image Repository</title>
+    <link rel="shortcut icon" href="../../Content/images/favicon.ico">
+    
+</head>
+<body>
+    
+
+<link type="text/css" href="../../Areas/HelpPage/HelpPage.css" rel="stylesheet" />
+<div id="body" class="help-page">
+    <section class="featured">
+        <div class="content-wrapper">
+            <p>
+                <a href="../../Help.html">Help Page Home</a>
+            </p>
+        </div>
+    </section>
+    <section class="content-wrapper main-content clear-fix">
+        
+<h1>GET objects/{id}/object-ontologies?rpp={rpp}&amp;page={page}</h1>
+<div>
+    <p>Gets the relations between an ontology item and the specified object.</p>
+
+    <h2>Request Information</h2>
+
+    <h3>URI Parameters</h3>
+        <table class="help-page-table">
+        <thead>
+            <tr><th>Name</th><th>Description</th><th>Type</th><th>Additional information</th></tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td class="parameter-name">id</td>
+                    <td class="parameter-documentation">
+                        <p>The identifier of the object.</p>
+                    </td>
+                    <td class="parameter-type">
+                        integer
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Required</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">rpp</td>
+                    <td class="parameter-documentation">
+                        <p>Results per page.</p>
+                    </td>
+                    <td class="parameter-type">
+                        integer
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Default value is 0</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">page</td>
+                    <td class="parameter-documentation">
+                        <p>Current page number.</p>
+                    </td>
+                    <td class="parameter-type">
+                        integer
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Default value is 0</p>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+
+
+
+    <h3>Body Parameters</h3>
+
+    <p></p>
+
+        <p>None.</p>
+
+
+    <h2>Response Information</h2>
+
+    <h3>Resource Description</h3>
+
+    <p></p>
+
+<a href="../ResourceModel%3FmodelName=GenericPaginatedListViewModelOfObjectOntologyItemViewModel.html">GenericPaginatedListViewModelOfObjectOntologyItemViewModel</a>    <table class="help-page-table">
+        <thead>
+            <tr><th>Name</th><th>Description</th><th>Type</th><th>Additional information</th></tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td class="parameter-name">TotalCount</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        integer
+                    </td>
+                    <td class="parameter-annotations">
+                            <p>None.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">Pagination</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        <a href="../ResourceModel%3FmodelName=PaginationParameterModel.html">PaginationParameterModel</a>
+                    </td>
+                    <td class="parameter-annotations">
+                            <p>None.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">Items</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                                Collection of <a href="../ResourceModel%3FmodelName=ObjectOntologyItemViewModel.html">ObjectOntologyItemViewModel</a>
+
+                    </td>
+                    <td class="parameter-annotations">
+                            <p>None.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">NextPageUrl</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        string
+                    </td>
+                    <td class="parameter-annotations">
+                            <p>None.</p>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+
+
+        <h3>Response Formats</h3>
+
+<div>
+        <h4 class="sample-header">application/json, text/json</h4>
+        <div class="sample-content">
+            <span><b>Sample:</b></span>
+<pre class="wrapped">
+{
+  &quot;totalCount&quot;: 1,
+  &quot;pagination&quot;: null,
+  &quot;items&quot;: [
+    {
+      &quot;id&quot;: &quot;sample string 1&quot;,
+      &quot;position&quot;: 2,
+      &quot;type&quot;: 3,
+      &quot;object&quot;: {
+        &quot;selfUrl&quot;: &quot;sample string 1&quot;
+      },
+      &quot;ontologyItem&quot;: {
+        &quot;selfUrl&quot;: &quot;sample string 1&quot;
+      },
+      &quot;selfUrl&quot;: &quot;sample string 4&quot;
+    },
+    {
+      &quot;id&quot;: &quot;sample string 1&quot;,
+      &quot;position&quot;: 2,
+      &quot;type&quot;: 3,
+      &quot;object&quot;: {
+        &quot;selfUrl&quot;: &quot;sample string 1&quot;
+      },
+      &quot;ontologyItem&quot;: {
+        &quot;selfUrl&quot;: &quot;sample string 1&quot;
+      },
+      &quot;selfUrl&quot;: &quot;sample string 4&quot;
+    }
+  ],
+  &quot;nextPageUrl&quot;: &quot;sample string 2&quot;
+}
+</pre>
+        </div>
+</div>
+</div>
+    </section>
+</div>
+
+</body>
+</html>

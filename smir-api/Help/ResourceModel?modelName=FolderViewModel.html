@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title> - SICAS Medical Image Repository</title>
+    <link rel="shortcut icon" href="../Content/images/favicon.ico">
+    
+</head>
+<body>
+    <link type="text/css" href="../Areas/HelpPage/HelpPage.css" rel="stylesheet" />
+<div id="body" class="help-page">
+    <section class="featured">
+        <div class="content-wrapper">
+            <p>
+                <a href="../Help.html">Help Page Home</a>
+            </p>
+        </div>
+    </section>
+    <h1>FolderViewModel</h1>
+    <p></p>
+    <section class="content-wrapper main-content clear-fix">
+            <table class="help-page-table">
+        <thead>
+            <tr><th>Name</th><th>Description</th><th>Type</th><th>Additional information</th></tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td class="parameter-name">Id</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        integer
+                    </td>
+                    <td class="parameter-annotations">
+                            <p>None.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">Name</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        string
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Filterable</p>
+                                <p>Settable</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">Level</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        integer
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Filterable</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">Owner</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        <a href="ResourceModel%3FmodelName=BaseViewModel.html">BaseViewModel</a>
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Filterable</p>
+                                <p>Includable</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">ParentFolder</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        <a href="ResourceModel%3FmodelName=BaseViewModel.html">BaseViewModel</a>
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Includable</p>
+                                <p>Settable</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">ChildFolders</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        <a href="ResourceModel%3FmodelName=IGenericPaginatedListViewModelOfBaseViewModel.html">IGenericPaginatedListViewModelOfBaseViewModel</a>
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Includable</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">ContainedObjects</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        <a href="ResourceModel%3FmodelName=IGenericPaginatedListViewModelOfBaseViewModel.html">IGenericPaginatedListViewModelOfBaseViewModel</a>
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Includable</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">ContainedObjectRelations</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        <a href="ResourceModel%3FmodelName=IGenericPaginatedListViewModelOfBaseViewModel.html">IGenericPaginatedListViewModelOfBaseViewModel</a>
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Includable</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">FolderGroupRights</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                                Collection of <a href="ResourceModel%3FmodelName=BaseViewModel.html">BaseViewModel</a>
+
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Includable</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">FolderUserRights</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                                Collection of <a href="ResourceModel%3FmodelName=BaseViewModel.html">BaseViewModel</a>
+
+                    </td>
+                    <td class="parameter-annotations">
+                                <p>Includable</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="parameter-name">SelfUrl</td>
+                    <td class="parameter-documentation">
+                        <p></p>
+                    </td>
+                    <td class="parameter-type">
+                        string
+                    </td>
+                    <td class="parameter-annotations">
+                            <p>None.</p>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+
+
+    </section>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1195 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>API - SICAS Medical Image Repository</title>
+    <link rel="shortcut icon" href="Content/images/favicon.ico">
+    
+</head>
+<body>
+    
+
+<link type="text/css" href="Areas/HelpPage/HelpPage.css" rel="stylesheet" />
+
+<div id="body" class="help-page">
+    <section class="featured">
+        <div class="content-wrapper">
+            <h1>SMIR REST API v0.12.1</h1>
+<h2>Introduction</h2>
+<h3>Security, Authentication, and Authorization</h3>
+<p>Productive releases of the SMIR REST API are only available using HTTPS.</p>
+<p>Clients can authenticate themselves either by providing a user name and password using basic authentication, a JSON Web Token (JWT) or by providing a SAML token using brokered authentication.</p>
+<h4>Supplying Basic Authentication Headers</h4>
+<p>If you need to you may construct and send basic authentication headers yourself. To do this you need to perform the following steps:</p>
+<ol>
+<li>Build a string of the form username:password</li>
+<li>Base64 (RFC 4648) encode the string.</li>
+<li>Supply an &quot;Authorization&quot; header with content &quot;Basic &quot; followed by the encoded string. For example, the string &quot;demo@virtualskeleton.ch:demo&quot; encodes to &quot;ZGVtb0B2aXJ0dWFsc2tlbGV0b24uY2g6ZGVtbw==&quot; in base64, so you would add the following to the request.</li>
+</ol>
+<blockquote>
+<p>Authorization: Basic ZGVtb0B2aXJ0dWFsc2tlbGV0b24uY2g6ZGVtbw==</p>
+</blockquote>
+<h4>Supplying JSON Web Token (JWT) Authentication Headers</h4>
+<p>JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.</p>
+<ol>
+<li>Use the Basic Authentication Headers approach described above in order to receive a JWT by visiting the API endpoint: /tokens/jwt</li>
+<li>Supply an &quot;Authorization&quot; header with content &quot;Bearer &quot; followed by the JWT. The structure of a JSON Web Token (JWT) Authentication Header is listed below.</li>
+</ol>
+<p>There are 3 parts separated by a . and each section is created differently which are header, payload and signature.</p>
+<blockquote>
+<p>Authorization: Bearer aaaaaaaaaa.bbbbbbbbbbb.cccccccccccc</p>
+</blockquote>
+<h4>Supplying SAML Authentication Headers</h4>
+<p>If you need to you may construct and send SAML authentication headers yourself. To do this you need to perform the following steps:</p>
+<ol>
+<li>Get the SAML token from the Identity Provider.</li>
+<li>ZLIB (RFC 1950) compress the retrieved SAML token.</li>
+<li>Base64 (RFC 4648) encode the compressed SAML token.</li>
+<li>Supply an &quot;Authorization&quot; header with content &quot;SAML auth=&quot; followed by the encoded string.</li>
+</ol>
+<blockquote>
+<p>Authorization: SAML auth=&lt;Base 64 encoded compressed SAML token&gt;</p>
+</blockquote>
+<h3>Requests, Responses, and Errors</h3>
+<blockquote>
+<p>A successful completion of a request returns one of three possible states:</p>
+</blockquote>
+<h4>200 OK</h4>
+<p>The default state. On GET requests, the response contains all the requested objects. On PUT and POST requests, the requested updates have been done correctly on the persistence layer.</p>
+<h4>201 Created</h4>
+<p>Returned on successful POST requests when one or more new objects have been created. The response contains information on the newly created objects, e.g. identification values.</p>
+<h4>204 No Content</h4>
+<p>Returned on successful DELETE requests. </p>
+<blockquote>
+<p>An unsuccessful completion of a request returns one of:</p>
+</blockquote>
+<h4>400 Bad Request</h4>
+<p>The format of the URL and/or of values in the parameter list is not valid. Or the URL indicates a non-existing action.</p>
+<h4>401 Unauthorized</h4>
+<p>Either the request does not contain required authentication information or the authenticated used is not authorized to get a requested object or to do the request updated operation.</p>
+<h4>404 Not Found</h4>
+<p>The URL is correct, but the requested object does not (or no longer) exist.</p>
+<h4>405 Method Not Allowed</h4>
+<p>Different action methods may be restricted to one or more of the HTTP methods (GET, PUT, or POST). The received request uses one that is not allowed with the action method specified in the URL. In this case, other parts of the URL are not validated.</p>
+<h4>500 Internal Server Error</h4>
+<p>When a method causes an exception that has no adequate handling in the method itself. Developers of client systems are kindly requested to report these response states to the developing team of the SMIR and to transmit information about the respective request and the response objects.</p>
+<h4>501 Not Implemented</h4>
+<p>May occur during development. The requested action has been specified and documented, but not yet implemented.</p>
+<h2>HTTP method definitions</h2>
+<table>
+<thead>
+<tr>
+	<th>Method</th>
+	<th>Description</th>
+	<th>Attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>GET</td>
+	<td>Getting a resource.</td>
+	<td>idempotent</td>
+</tr>
+<tr>
+	<td>POST</td>
+	<td>Creating a resource.</td>
+	<td>not idempotent</td>
+</tr>
+<tr>
+	<td>PUT</td>
+	<td>Updating a resource.</td>
+	<td>idempotent</td>
+</tr>
+<tr>
+	<td>DELETE</td>
+	<td>Deleting a resource.</td>
+	<td>idempotent</td>
+</tr>
+<tr>
+	<td>OPTIONS</td>
+	<td>Querying a resource.</td>
+	<td>idempotent</td>
+</tr>
+</tbody>
+</table>
+<p>An idempotent HTTP method can be called many times without different outcomes.</p>
+<h2>General definitions</h2>
+<h3>Pagination</h3>
+<p>All URLs returning a list of items with a GET request are paginated by default.</p>
+<table>
+<thead>
+<tr>
+	<th>Option</th>
+	<th>Value type</th>
+	<th>Default value</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>rpp</td>
+	<td>int</td>
+	<td>25</td>
+	<td>Defines the amount of included results per page.</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td>Allowed values: 10, 25, 50, 100, 250, 500</td>
+</tr>
+<tr>
+	<td>page</td>
+	<td>int</td>
+	<td>0</td>
+	<td>Defines the current page index.</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td>Allowed values: 0, 1, 2, ...</td>
+</tr>
+</tbody>
+</table>
+<h3>OData</h3>
+<p>OData v4, short for Open Data Protocol, is an open protocol (ISO/IEC approved and OASIS standard) to allow the creation and consumption of queryable and interoperable RESTful APIs in a simple and standard way.
+Endpoints having a model with a property annotated with the Filterable attribute support OData syntax.</p>
+<p>For example the groups endpoint can be filtered by the name (property names have to start with a uppercase letter): groups?$filter=contains(Name,'sicas')</p>
+<ul>
+<li>Supported query options = $filter</li>
+<li>Supported functions = StartsWith + Contains</li>
+<li>Supported arithmetic operators = none</li>
+<li>Supported logical operators = all</li>
+</ul>
+<h3>Upload</h3>
+<p>An example request to upload a file with the <strong>multipart/form-data</strong> MIME type is listed consecutively.</p>
+<p>Limitation: Exactly one file can be uploaded per request.</p>
+<blockquote>
+<p>POST https://smir.ch/api/upload HTTP/1.1<br>
+Content-Type: multipart/form-data; boundary=&quot;09335213-878a-416b-b469-35551259de44&quot;<br>
+Content-Length: 161300<br>
+<br>
+--09335213-878a-416b-b469-35551259de44<br>
+Content-Disposition: form-data; filename=sample.dcm<br>
+<br>
+&quot;content of sample.dcm&quot;<br>
+<br>
+--09335213-878a-416b-b469-35551259de44--</p>
+</blockquote>
+<h3>Chunked Upload</h3>
+<p>The chunked upload endpoint can be used in order to upload large files. Chunks can be any size up to 100 MB. A typical chunk is 4 MB. Using large chunks will mean fewer calls and faster overall throughput. However, whenever a transfer is interrupted, you will have to resume at the beginning of the last chunk, so it is often safer to use smaller chunks. </p>
+<ol>
+<li>Send a POST request equivalent to the one described above to <strong>https://smir.ch/api/chunked_upload?chunk=1&amp;uid=b4e089e8-7403-4683-bad5-e64b2265bf4d</strong> for the first chunk.</li>
+<li>Repeatedly POST subsequent chunks by incrementing the number in the URL identifying the current chunk.</li>
+<li>After the last chunk, POST to <strong>https://smir.ch/api/chunked_upload/commit?filename=sample.dcm&amp;uid=b4e089e8-7403-4683-bad5-e64b2265bf4d</strong> to complete the upload.</li>
+</ol>
+<h3>Date format</h3>
+<p>All dates are in UTC (Universal Time Coordinated) and represented in ISO 8601 format (International Organization for Standardization). Example:</p>
+<blockquote>
+<p>2014-04-17T07:52:41.4700000Z</p>
+</blockquote>
+<h3>URL definitions</h3>
+<blockquote>
+<p>Remark: All SMIR REST API request URLs start with the <strong>/api/</strong> prefix.</p>
+</blockquote>
+<h3>Versioning</h3>
+<p>Versioning will be applied once the version 1.0 is published. The version will be embedded within the URL. Example:</p>
+<blockquote>
+<p>https://smir.ch/api<strong>/v1/</strong>...</p>
+</blockquote>
+<p>The following lists which types of changes necessitate a new version and which don't:</p>
+<p>Changes that don't require a new version:</p>
+<ul>
+<li>New resources</li>
+<li>New HTTP methods on existing resources</li>
+<li>New data formats</li>
+<li>New attributes or elements on existing data types</li>
+</ul>
+<p>Changes that require a new version:</p>
+<ul>
+<li>Removed or renamed URLs</li>
+<li>Removed or renamed attributes or elements on existing data types</li>
+<li>Removal of support for HTTP methods on existing URLs</li>
+</ul>
+<h3>History</h3>
+<h4>v0.11.0 01.12.2019</h4>
+<p>Breaking changes: the model representing files has been changed</p>
+<ul>
+<li>
+Before
+<ul>
+<li>Id is an integer</li>
+<li>Objects navigation property is a paginated array</li>
+</ul>
+</li>
+<li>
+Now
+<ul>
+<li>Id is a string (GUID)</li>
+<li>Objects navigation property has been removed</li>
+</ul>
+</li>
+</ul>
+<p>Breaking changes: the files endpoints have been removed</p>
+<ul>
+<li>
+Removed endpoints
+<ul>
+<li>GET files/{id}?include={include}</li>
+<li>GET files/{id}/download</li>
+<li>GET files/{id}/objects?rpp={rpp}&amp;page={page}</li>
+</ul>
+</li>
+<li>
+Added endpoints
+<ul>
+<li>GET objects/{id}/files/{file_id}?include={include}</li>
+<li>GET objects/{id}/files/{file_id}/download</li>
+</ul>
+</li>
+</ul>
+<h4>v0.10.0 17.10.2018</h4>
+<p>Breaking changes: the model representing folders has been changed</p>
+<ul>
+<li>
+Before
+<ul>
+<li>ChildFolders is an array containing all direct child folders</li>
+</ul>
+</li>
+<li>
+Now
+<ul>
+<li>ChildFolders is now paginated</li>
+<li>GET folders/{id}/folders?rpp={rpp}&amp;page={page}&amp;include={include}</li>
+</ul>
+</li>
+</ul>
+<h4>v0.9.0 25.09.2018</h4>
+<ul>
+<li>
+group-users endpoints introduced for group management purposes (add/delete users to/from groups)
+<ul>
+<li>enables to filter groups of current user with OData (e.g. $filter=User/Id eq 123)</li>
+<li>GET group-users?rpp={rpp}&amp;page={page}&amp;include={include}    
+</li>
+<li>GET group-users/{id}?include={include}    
+</li>
+<li>POST group-users    
+</li>
+<li>DELETE group-users/{id}</li>
+</ul>
+</li>
+</ul>
+<p>Breaking changes: the object-ontologies endpoints are now streamlined to match the others</p>
+<ul>
+<li>
+Before
+<ul>
+<li>GET object-ontologies/{type}/{id}</li>
+<li>POST object-ontologies/{type}</li>
+<li>PUT object-ontologies/{type}/{id}</li>
+</ul>
+</li>
+<li>
+Now
+<ul>
+<li>GET object-ontologies/{id}</li>
+<li>POST object-ontologies</li>
+<li>PUT object-ontologies</li>
+</ul>
+</li>
+</ul>
+<h4>v0.8.0 12.09.2018</h4>
+<p>Breaking changes: the model representing folders has been changed</p>
+<ul>
+<li>
+Before
+<ul>
+<li>ContainedObjects is an array containing all objects</li>
+<li>Objects can be added or removed in this array</li>
+</ul>
+</li>
+<li>
+<p>Now</p>
+<ul>
+<li>ContainedObjects is now paginated and objects can't be added or removed in this list anymore</li>
+<li>ContainedObjectRelations property added​</li>
+<li>GET folders/{id}/objects?rpp={rpp}&amp;page={page}</li>
+<li>GET folders/{id}/folder-objects?rpp={rpp}&amp;page={page}</li>
+</ul>
+</li>
+<li>
+<p>folder-objects endpoints introduced</p>
+<ul>
+<li>GET folder-objects/{id}</li>
+<li>POST folder-objects</li>
+<li>DELETE folder-objects/{id}</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+    </section>
+    <section class="content-wrapper main-content clear-fix">
+
+
+<h2 id="Dominances">Dominances</h2>
+    <p>Dominances</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-dominances_rpp_page.html">GET dominances?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of dominances.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-dominances-id.html">GET dominances/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the dominance with the specified identifier.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="FolderObjects">FolderObjects</h2>
+    <p>Represents a relation between a folder and an object.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folder-objects-id.html">GET folder-objects/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the relation between a folder and an object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-folder-objects.html">POST folder-objects</a></td>
+            <td class="api-documentation">
+                <p>Creates a relation between a folder and an object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/DELETE-folder-objects-id.html">DELETE folder-objects/{id}</a></td>
+            <td class="api-documentation">
+                <p>Deletes the relation between a folder and an object.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="FolderRights">FolderRights</h2>
+    <p>Permission rights related to folders.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folder_rights_rpp_page.html">GET folder_rights?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of folder rights.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folder_rights-id.html">GET folder_rights/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the folder right with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folder_right_sets_rpp_page_include.html">GET folder_right_sets?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of folder right sets.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folder_right_sets-id_include.html">GET folder_right_sets/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the folder right set with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folder-user-rights_rpp_page_include.html">GET folder-user-rights?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of folder user rights.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folder-user-rights-id_include.html">GET folder-user-rights/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the folder user right with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-folder-user-rights.html">POST folder-user-rights</a></td>
+            <td class="api-documentation">
+                <p>Creates a new or updates an existing folder user right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/PUT-folder-user-rights-id.html">PUT folder-user-rights/{id}</a></td>
+            <td class="api-documentation">
+                <p>Updates an existing folder user right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/DELETE-folder-user-rights-id.html">DELETE folder-user-rights/{id}</a></td>
+            <td class="api-documentation">
+                <p>Deletes the folder user right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folder-group-rights_rpp_page_include.html">GET folder-group-rights?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of folder group rights.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folder-group-rights-id_include.html">GET folder-group-rights/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the folder group right with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-folder-group-rights.html">POST folder-group-rights</a></td>
+            <td class="api-documentation">
+                <p>Creates a new or updates an existing folder group right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/PUT-folder-group-rights-id.html">PUT folder-group-rights/{id}</a></td>
+            <td class="api-documentation">
+                <p>Updates an existing folder group right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/DELETE-folder-group-rights-id.html">DELETE folder-group-rights/{id}</a></td>
+            <td class="api-documentation">
+                <p>Deletes the folder group right.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Folders">Folders</h2>
+    <p>A folder can be used to organize data and sharing thereof.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folders_rpp_page_include.html">GET folders?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of folders. [OData]</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folders-id_include.html">GET folders/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the folder with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-folders.html">POST folders</a></td>
+            <td class="api-documentation">
+                <p>Creates a new folder.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/PUT-folders-id.html">PUT folders/{id}</a></td>
+            <td class="api-documentation">
+                <p>Updates or moves an existing folder.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/DELETE-folders-id.html">DELETE folders/{id}</a></td>
+            <td class="api-documentation">
+                <p>Deletes the specified folder if it is empty.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folders-id-folders_rpp_page_include.html">GET folders/{id}/folders?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the direct child folders of the specified folder. [OData]</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folders-id-objects_rpp_page.html">GET folders/{id}/objects?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets the objects of the specified folder.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-folders-id-folder-objects_rpp_page.html">GET folders/{id}/folder-objects?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets the relations between objects and the specified folder.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Genders">Genders</h2>
+    <p>Genders</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-genders_rpp_page.html">GET genders?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of genders.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-genders-id.html">GET genders/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the gender with the specified identifier.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Groups">Groups</h2>
+    <p>Groups of the repository.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-groups_rpp_page_include.html">GET groups?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of groups. [OData]</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-groups-id_include.html">GET groups/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the group with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-groups.html">POST groups</a></td>
+            <td class="api-documentation">
+                <p>Creates a group.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/PUT-groups-id.html">PUT groups/{id}</a></td>
+            <td class="api-documentation">
+                <p>Updates an existing group.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/DELETE-groups-id.html">DELETE groups/{id}</a></td>
+            <td class="api-documentation">
+                <p>Deletes the group with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-groups-id-users_rpp_page.html">GET groups/{id}/users?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets the users of the specified group.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-groups-id-group-users_rpp_page.html">GET groups/{id}/group-users?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets the relations between users and the specified group.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="GroupTypes">GroupTypes</h2>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-group_types_rpp_page.html">GET group_types?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of group types. [OData]</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-group_types-name.html">GET group_types/{name}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the group type with the specified name.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="GroupUsers">GroupUsers</h2>
+    <p>Represents a relation between a group and a user.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-group-users_rpp_page_include.html">GET group-users?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of relations between groups and users. [OData]</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-group-users-id_include.html">GET group-users/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the relation between a group and a user.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-group-users.html">POST group-users</a></td>
+            <td class="api-documentation">
+                <p>Creates a relation between a group and a user.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/DELETE-group-users-id.html">DELETE group-users/{id}</a></td>
+            <td class="api-documentation">
+                <p>Deletes the relation between a group and a user.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Licenses">Licenses</h2>
+    <p>Licenses.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-licenses_rpp_page.html">GET licenses?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of licenses.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-licenses-id.html">GET licenses/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the license with the specified identifier.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Modalities">Modalities</h2>
+    <p>Medical imaging modalities.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-modalities_rpp_page.html">GET modalities?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of modalities.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-modalities-id.html">GET modalities/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the modality with the specified identifier.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="ObjectFiles">ObjectFiles</h2>
+    <p>Supported file formats are:
+             DICOM (Digital Imaging and Communications in Medicine),
+             MetaImage,
+             Analyze,
+             Nifti,
+             HDF5 (Hierarchical Data Format),
+             and others.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-files_rpp_page.html">GET objects/{id}/files?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets the files of the specified object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-files-file_id_include.html">GET objects/{id}/files/{file_id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the file with the specified identifiers.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-files-file_id-download.html">GET objects/{id}/files/{file_id}/download</a></td>
+            <td class="api-documentation">
+                <p>Downloads the file with the specified identifiers.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="ObjectLinks">ObjectLinks</h2>
+    <p>Represents a relation between two objects.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object-links-id.html">GET object-links/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the relation representing a link between two objects.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-object-links.html">POST object-links</a></td>
+            <td class="api-documentation">
+                <p>Creates a link between the provided objects.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/DELETE-object-links-id.html">DELETE object-links/{id}</a></td>
+            <td class="api-documentation">
+                <p>Deletes the relation with the specified identifier representing a link between two objects.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="ObjectOntologies">ObjectOntologies</h2>
+    <p>Represents a relation between an object and an ontology item.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object-ontologies-id.html">GET object-ontologies/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the relation between an object and an ontology item.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-object-ontologies.html">POST object-ontologies</a></td>
+            <td class="api-documentation">
+                <p>Creates a relation between the object and the ontology item.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/PUT-object-ontologies-id.html">PUT object-ontologies/{id}</a></td>
+            <td class="api-documentation">
+                <p>Updates the relation between the object and the ontology item.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="ObjectPreviews">ObjectPreviews</h2>
+    <p>Preview images of objects.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-previews.html">GET objects/{id}/previews</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of previews of the object with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-previews-preview_id.html">GET objects/{id}/previews/{preview_id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the preview of the object with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-previews-preview_id-image.html">GET objects/{id}/previews/{preview_id}/image</a></td>
+            <td class="api-documentation">
+                <p>Gets the image of the preview and object with the specified identifiers.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-previews-preview_id-thumbnail.html">GET objects/{id}/previews/{preview_id}/thumbnail</a></td>
+            <td class="api-documentation">
+                <p>Gets the thumbnail of the preview and object with the specified identifiers.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="ObjectRights">ObjectRights</h2>
+    <p>Permission rights related to objects.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object_rights_rpp_page.html">GET object_rights?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of object rights.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object_rights-id.html">GET object_rights/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the object right with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object_right_sets_rpp_page_include.html">GET object_right_sets?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of object right sets.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object_right_sets-id_include.html">GET object_right_sets/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the object right set with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object-user-rights_rpp_page_include.html">GET object-user-rights?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of object user rights.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object-user-rights-id_include.html">GET object-user-rights/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the object user right with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-object-user-rights.html">POST object-user-rights</a></td>
+            <td class="api-documentation">
+                <p>Creates a new or updates an existing object user right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/PUT-object-user-rights-id.html">PUT object-user-rights/{id}</a></td>
+            <td class="api-documentation">
+                <p>Updates an existing object user right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/DELETE-object-user-rights-id.html">DELETE object-user-rights/{id}</a></td>
+            <td class="api-documentation">
+                <p>Deletes the object user right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object-group-rights_rpp_page_include.html">GET object-group-rights?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of object group rights.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object-group-rights-id_include.html">GET object-group-rights/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the object group right with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-object-group-rights.html">POST object-group-rights</a></td>
+            <td class="api-documentation">
+                <p>Creates a new or updates an existing object group right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/PUT-object-group-rights-id.html">PUT object-group-rights/{id}</a></td>
+            <td class="api-documentation">
+                <p>Updates an existing object group right.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/DELETE-object-group-rights-id.html">DELETE object-group-rights/{id}</a></td>
+            <td class="api-documentation">
+                <p>Deletes the object group right.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Objects">Objects</h2>
+    <p>An object represents a collection of files and other information. Important: See &#39;OPTIONS objects&#39; for possible response object types.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects_rpp_page_include.html">GET objects?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of objects. [OData]</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-published_rpp_page_include.html">GET objects/published?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of published objects of the current user.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-unpublished_rpp_page_include.html">GET objects/unpublished?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of unpublished objects of the current user.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/OPTIONS-objects.html">OPTIONS objects</a></td>
+            <td class="api-documentation">
+                <p>Returns the available options for this resource. It includes information about enum types.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id_include.html">GET objects/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the object with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/DELETE-objects-id.html">DELETE objects/{id}</a></td>
+            <td class="api-documentation">
+                <p>Deletes the object with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-download.html">GET objects/{id}/download</a></td>
+            <td class="api-documentation">
+                <p>Downloads the object with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/PUT-objects-id-publish.html">PUT objects/{id}/publish</a></td>
+            <td class="api-documentation">
+                <p>Publishes the object with the specified identifier.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/PUT-objects-id_include.html">PUT objects/{id}?include={include}</a></td>
+            <td class="api-documentation">
+                <p>Updates the object with the specified identifier. The request body must contain an ObjectViewModel or a derivation of it.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-objects_rpp_page.html">GET objects/{id}/objects?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets the related objects of the specified object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-object-links_rpp_page.html">GET objects/{id}/object-links?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets the relations between another object and the specified object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-ontologies_rpp_page.html">GET objects/{id}/ontologies?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets the ontology items of the specified object.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-objects-id-object-ontologies_rpp_page.html">GET objects/{id}/object-ontologies?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets the relations between an ontology item and the specified object.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="ObjectTypes">ObjectTypes</h2>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object_types_rpp_page.html">GET object_types?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of object types.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-object_types-name.html">GET object_types/{name}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the object type with the specified name.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Ontologies">Ontologies</h2>
+    <p>Supported ontologies are:
+             FMA (Foundational Model of Anatomy).</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/OPTIONS-ontologies.html">OPTIONS ontologies</a></td>
+            <td class="api-documentation">
+                <p>Returns the available options for this resource. It includes information about enum types.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-ontologies-type_rpp_page.html">GET ontologies/{type}?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of ontology items of the specified ontology. [OData]</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-ontologies-type-id.html">GET ontologies/{type}/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the ontology item with the specified identifier.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Search">Search</h2>
+    <p>Enables to conduct sophisticated search queries.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/OPTIONS-dynamic_search.html">OPTIONS dynamic_search</a></td>
+            <td class="api-documentation">
+                <p>Returns the available options for this resource.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-dynamic_search_rpp_page_include.html">POST dynamic_search?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Returns the result of the sophisticated search query.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="SegmentationMethods">SegmentationMethods</h2>
+    <p>Segmentation methods.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-segmentation_methods_rpp_page.html">GET segmentation_methods?rpp={rpp}&amp;page={page}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of segmentation methods.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-segmentation_methods-id.html">GET segmentation_methods/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the segmentation method with the specified identifier.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Tokens">Tokens</h2>
+    <p>Tokens for authentication.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-tokens-jwt.html">GET tokens/jwt</a></td>
+            <td class="api-documentation">
+                <p>Gets a JSON Web Token.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Upload">Upload</h2>
+    <p>Upload a supported file format.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-upload.html">POST upload</a></td>
+            <td class="api-documentation">
+                <p>Uploads a supported file.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-upload-hash.html">POST upload/hash</a></td>
+            <td class="api-documentation">
+                <p>Checks if the specified hash (SHA1) already exists.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-chunked_upload_chunk_uid.html">POST chunked_upload?chunk={chunk}&amp;uid={uid}</a></td>
+            <td class="api-documentation">
+                <p>Uploads a supported file in chunks.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/POST-chunked_upload-commit_filename_uid.html">POST chunked_upload/commit?filename={filename}&amp;uid={uid}</a></td>
+            <td class="api-documentation">
+                <p>Commits the chunked upload.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="Users">Users</h2>
+    <p>Users of the repository.</p>
+<table class="help-page-table">
+    <thead>
+        <tr><th>API</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-users_rpp_page_include.html">GET users?rpp={rpp}&amp;page={page}&amp;include={include}</a></td>
+            <td class="api-documentation">
+                <p>Gets a list of users. [OData]</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-users-me.html">GET users/me</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the current user.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="api-name"><a href="Help/Api/GET-users-id.html">GET users/{id}</a></td>
+            <td class="api-documentation">
+                <p>Gets the information of the user with the specified identifier.</p>
+            </td>
+        </tr>
+    </tbody>
+</table>    </section>
+</div>
+
+</body>
+</html>
